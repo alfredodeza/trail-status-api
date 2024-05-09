@@ -1,0 +1,36 @@
+name: Run parse.py and commit index.json
+
+on:
+  schedule:
+    - cron: '0,30 10-23 * * *'
+  # This schedule is in UTC. You may need to adjust the time for EST.
+
+  # allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Run parse.py
+      run: python parse.py
+
+    - name: Commit and push if it changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add index.json
+        if git diff --staged --quiet; then
+          echo 'No changes to commit'
+        else
+          git commit -m 'Update index.json'
+          git push
+        fi
