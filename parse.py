@@ -1,11 +1,18 @@
 import urllib.request
 import json
 import re
+from datetime import datetime, timedelta
+
 
 def save(message):
-    # Create a dictionary with the trail status
-    data = {"message": message}
-
+    # Create a dictionary with the trail status and last_checked time
+    current_utc_time = datetime.utcnow()
+    est_time = current_utc_time - timedelta(hours=5)  # Adjust to EST by subtracting 5 hours
+    formatted_time = est_time.strftime("%B %d, %Y %I:%M %p")
+    data = {
+        "message": message,
+        "last_checked": formatted_time
+    }
     # Write the data to a JSON file
     with open("index.json", "w") as file:
         json.dump(data, file)
